@@ -1,202 +1,1945 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="paper">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>호작 (虎作, TIGER MAKER) | 주인장 약력</title>
+    <meta name="description" content="HOJAK · 虎作 — Atelier of Precision. 3D Printing Studio.">
+    <meta name="theme-color" content="#f0ead6">
+    <title>HOJAK · 虎作 — Atelier of Precision</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://my.spline.design" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=IBM+Plex+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;700;900&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* 기본 스타일 및 컨셉 설정 */
+        /* === 토큰 ============================================ */
+        :root {
+            /* Paper (default) */
+            --bg: #f0ead6;
+            --bg-2: #e8dfc4;
+            --bg-3: #ddd2b3;
+            --paper-grain: #d4c79f;
+            --ink: #14110d;
+            --ink-2: #3a342a;
+            --ink-3: #76695a;
+            --rule: #1a1a1a;
+            --tiger: #c1440e;
+            --tiger-soft: #e85d04;
+            --tiger-deep: #8b2c00;
+            --moss: #3d5a3d;
+            --gold: #ad8222;
+
+            --serif: 'Playfair Display', 'Noto Serif KR', serif;
+            --korean: 'Noto Serif KR', 'Gowun Batang', serif;
+            --korean-soft: 'Gowun Batang', 'Noto Serif KR', serif;
+            --sans: 'Inter', -apple-system, sans-serif;
+            --mono: 'IBM Plex Mono', monospace;
+
+            --pad-x: clamp(20px, 5vw, 64px);
+            --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        :root[data-theme="ink"] {
+            --bg: #14110d;
+            --bg-2: #1c1814;
+            --bg-3: #2a241c;
+            --paper-grain: #2a241c;
+            --ink: #f0ead6;
+            --ink-2: #c5bb9c;
+            --ink-3: #8a7e62;
+            --rule: #f0ead6;
+            --tiger: #ff7733;
+            --tiger-soft: #ff9d5c;
+            --tiger-deep: #c1440e;
+            --moss: #92b890;
+            --gold: #d4a730;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'Malgun Gothic', 'Dotum', sans-serif; /* 나눔명조나 바탕체 계열이 좋으나, 기본 폰트 중에서는 이 정도가 무난 */
-            background-color: #f8f7f5; /* 한지 느낌의 미색 */
-            color: #333;
-            line-height: 1.8;
-            margin: 0;
-            padding: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: var(--sans);
+            font-size: clamp(14px, 0.95vw + 0.45rem, 16px);
+            line-height: 1.55;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        /* 종이 그레인 */
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.18;
+            mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+        }
+        :root[data-theme="ink"] body::before { mix-blend-mode: screen; opacity: 0.05; }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-2); }
+        ::-webkit-scrollbar-thumb { background: var(--ink); }
+
+        /* 접근성 */
+        .skip-link {
+            position: absolute;
+            top: -100px; left: 16px;
+            z-index: 10000;
+            background: var(--ink);
+            color: var(--bg);
+            padding: 12px 20px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: top 0.3s;
+        }
+        .skip-link:focus { top: 16px; }
+        :focus-visible { outline: 3px solid var(--tiger); outline-offset: 2px; }
+
+        /* 진척 바 (얇은 잉크 라인) */
+        .scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            width: var(--progress, 0%);
+            background: var(--tiger);
+            z-index: 10000;
+            transition: width 0.05s linear;
+        }
+
+        /* === 매거진 마스트헤드 헤더 === */
+        .masthead {
+            position: relative;
+            border-bottom: 3px solid var(--rule);
+            padding: 16px var(--pad-x) 14px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+            background: var(--bg);
+        }
+        .masthead::after {
+            content: '';
+            position: absolute;
+            bottom: -8px; left: 0; right: 0;
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .mast-left, .mast-right {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            color: var(--ink-2);
+            text-transform: uppercase;
             display: flex;
-            justify-content: center;
+            gap: 16px;
+            align-items: center;
         }
+        .mast-left { justify-content: flex-start; }
+        .mast-right { justify-content: flex-end; flex-wrap: wrap; }
 
-        .container {
-            width: 90%;
-            max-width: 700px; /* QR코드로 볼 때 적합한 너비 */
-            padding: 40px 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-        }
-
-        /* 헤더 섹션: 호작 로고 및 슬로건 */
-        .header {
+        .mast-center {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 900;
+            font-size: clamp(1.4rem, 3vw, 2.2rem);
+            letter-spacing: -0.02em;
+            line-height: 1;
             text-align: center;
-            padding-bottom: 30px;
-            border-bottom: 2px solid #ccc;
-            margin-bottom: 30px;
+            white-space: nowrap;
+        }
+        .mast-center .han {
+            font-family: var(--korean);
+            font-style: normal;
+            font-size: 0.55em;
+            margin: 0 8px;
+            color: var(--tiger);
+            letter-spacing: 0.2em;
+            vertical-align: 0.15em;
         }
 
-        .logo-image {
-            max-width: 150px; /* 로고 크기 조정 */
-            height: auto;
-            margin-bottom: 10px;
+        .mast-btn {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 6px 10px;
+            background: transparent;
+            border: 1px solid var(--rule);
+            color: var(--ink);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .mast-btn:hover { background: var(--ink); color: var(--bg); }
+
+        /* === 네비 (서브 헤더) === */
+        nav.subnav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: color-mix(in oklab, var(--bg) 92%, transparent);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--rule);
+            padding: 10px var(--pad-x);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        nav.subnav .nav-list {
+            display: none;
+            gap: 28px;
+            list-style: none;
+        }
+        nav.subnav .nav-list a {
+            color: var(--ink-2);
+            text-decoration: none;
+            position: relative;
+            padding: 4px 0;
+        }
+        nav.subnav .nav-list a:hover {
+            color: var(--tiger);
+        }
+        nav.subnav .nav-list a:hover::before {
+            content: '✦';
+            position: absolute;
+            left: -16px;
+            color: var(--tiger);
+        }
+        nav.subnav .nav-issue { color: var(--ink-3); }
+        nav.subnav .nav-cta {
+            background: var(--tiger);
+            color: var(--bg);
+            padding: 8px 16px;
+            text-decoration: none;
+            border: none;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        nav.subnav .nav-cta:hover { background: var(--tiger-deep); }
+
+        /* 햄버거 (모바일) */
+        .hamburger {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid var(--rule);
+            padding: 6px 8px;
+        }
+        .hamburger span {
+            width: 18px; height: 1.5px;
+            background: var(--ink);
+            transition: all 0.3s;
+        }
+        .hamburger.active span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+        .mobile-menu {
+            position: fixed; inset: 0;
+            background: var(--bg);
+            z-index: 200;
+            padding: 80px var(--pad-x);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu a {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: 2.5rem;
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 1px solid var(--rule);
+            padding: 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .mobile-menu a .num {
+            font-family: var(--mono);
+            font-style: normal;
+            font-size: 0.9rem;
+            color: var(--tiger);
         }
 
-        h1 {
-            font-family: '바탕체', serif; /* 전통적인 느낌 강조 */
-            font-size: 3em;
-            margin: 10px 0;
-            font-weight: bold;
-            letter-spacing: 5px;
+        /* === HERO 섹션 === */
+        .hero {
+            padding: clamp(40px, 6vw, 80px) var(--pad-x) clamp(60px, 8vw, 100px);
+            position: relative;
+            border-bottom: 3px double var(--rule);
         }
 
-        .slogan {
-            font-size: 1.1em;
-            color: #555;
-            margin-top: 5px;
-        }
-
-        /* 일반 섹션 스타일 */
-        .section-title {
-            font-family: '바탕체', serif;
-            font-size: 1.8em;
-            font-weight: bold;
-            margin-top: 40px;
-            margin-bottom: 15px;
-            color: #1a1a1a;
-            border-left: 5px solid #a00; /* 포인트 색상: 붉은색 */
-            padding-left: 10px;
-        }
-
-        /* 경력 및 전공 목록 스타일 */
-        .list-item {
-            margin-bottom: 8px;
-            padding-left: 15px;
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
             position: relative;
         }
 
-        .list-item::before {
-            content: '•'; /* 전통적인 기호 대신 간단한 점 */
-            color: #a00;
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-left: -1em;
+        /* 호수/날짜 헤더 */
+        .hero-meta {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            border-bottom: 1px solid var(--rule);
+            padding-bottom: 12px;
+            margin-bottom: 8px;
         }
 
-        /* 링크 버튼 섹션 */
-        .links-container {
-            margin-top: 30px;
-            text-align: center;
-            padding: 20px 0;
-            border-top: 1px solid #eee;
+        /* 메가 타이틀 */
+        .hero-title {
+            font-family: var(--serif);
+            font-weight: 900;
+            font-style: italic;
+            font-size: clamp(4rem, 16vw, 13rem);
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            position: relative;
+        }
+        .hero-title .line-1 { display: block; }
+        .hero-title .line-2 {
+            display: block;
+            text-align: right;
+            font-style: normal;
+            font-weight: 400;
+            color: var(--tiger);
+        }
+        .hero-title .han {
+            font-family: var(--korean);
+            font-style: normal;
+            font-weight: 900;
+            color: var(--ink);
+        }
+        .hero-title .amp {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 400;
+            color: var(--tiger);
+            font-size: 0.7em;
+            margin: 0 0.1em;
         }
 
-        .link-button {
-            display: block; /* 링크를 블록 형태로 만들어 중앙 정렬 및 전체 너비 사용 */
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background-color: #a00; /* 강조 색상 */
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .link-button:hover {
-            background-color: #c00;
-        }
-
-        .disabled-button {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        /* 작품 갤러리 */
-        .gallery {
+        /* 서브 디스크립션 + Spline 표본 그리드 */
+        .hero-body {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2열 배치 */
-            gap: 15px;
+            grid-template-columns: 1fr;
+            gap: 32px;
             margin-top: 20px;
         }
 
-        .gallery-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            border: 1px solid #ddd;
+        .hero-lede {
+            position: relative;
+        }
+        .hero-lede .drop-cap {
+            float: left;
+            font-family: var(--serif);
+            font-weight: 900;
+            font-size: 5.5em;
+            line-height: 0.8;
+            margin: 6px 12px 0 0;
+            color: var(--tiger);
+            font-style: italic;
+        }
+        .hero-lede p {
+            font-family: var(--korean-soft);
+            font-size: 1.05rem;
+            line-height: 1.75;
+            color: var(--ink-2);
+        }
+        .hero-lede p:not(:first-of-type) { margin-top: 14px; }
+        .hero-lede em {
+            font-style: normal;
+            background: linear-gradient(180deg, transparent 65%, color-mix(in oklab, var(--tiger) 35%, transparent) 65%);
+            padding: 0 2px;
         }
 
-        .gallery-item p {
-            font-size: 0.9em;
+        /* 사이드 바이라인 */
+        .hero-byline {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--ink-3);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px solid var(--rule);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .hero-byline strong { color: var(--ink); font-weight: 600; }
+
+        /* ===== Spline 표본판 (specimen) ===== */
+        .specimen {
+            position: relative;
+            background: var(--bg-2);
+            border: 1px solid var(--rule);
+            padding: 20px;
+        }
+        /* 표본판 외곽 점선 */
+        .specimen::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border: 1px dashed var(--rule);
+            pointer-events: none;
+        }
+        /* 코너 마크 */
+        .specimen .corner {
+            position: absolute;
+            width: 16px; height: 16px;
+            border: 2px solid var(--ink);
+            z-index: 2;
+            background: var(--bg);
+        }
+        .specimen .corner.tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+        .specimen .corner.tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+        .specimen .corner.bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+        .specimen .corner.br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+        .specimen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed var(--rule);
+            position: relative;
+            z-index: 1;
+        }
+        .specimen-header .live::before {
+            content: '●';
+            color: var(--tiger);
+            margin-right: 6px;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0.3; } }
+
+        .specimen-frame {
+            position: relative;
+            aspect-ratio: 1 / 1;
+            background:
+                radial-gradient(circle at center, var(--bg) 0%, var(--bg-2) 100%);
+            overflow: hidden;
+            border: 1px solid var(--rule);
+        }
+        .specimen-frame iframe {
+            border: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            opacity: 0;
+            transition: opacity 1s var(--ease-out);
+        }
+        .specimen-frame iframe.loaded { opacity: 1; }
+
+        .specimen-loader {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            transition: opacity 0.5s;
+        }
+        .specimen-loader.hidden { opacity: 0; pointer-events: none; }
+        .specimen-loader::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(0deg, transparent 0 19px, color-mix(in oklab, var(--rule) 8%, transparent) 19px 20px),
+                repeating-linear-gradient(90deg, transparent 0 19px, color-mix(in oklab, var(--rule) 8%, transparent) 19px 20px);
+            mask: radial-gradient(circle at center, black, transparent 70%);
+        }
+
+        .specimen-caption {
+            margin-top: 14px;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            line-height: 1.6;
+            color: var(--ink-2);
+            position: relative;
+            z-index: 1;
+        }
+        .specimen-caption .label {
+            font-weight: 600;
+            color: var(--tiger);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-right: 8px;
+        }
+
+        /* 수직 한자 리본 */
+        .vertical-ribbon {
+            display: none;
+            position: absolute;
+            top: 60px; right: 8px;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-family: var(--korean);
+            font-size: 1rem;
+            color: var(--tiger);
+            letter-spacing: 0.5em;
+            font-weight: 700;
+        }
+        .vertical-ribbon::after {
+            content: '';
+            display: block;
+            margin-top: 12px;
+            width: 1px; height: 40px;
+            background: var(--tiger);
+        }
+
+        /* 통계 (미니 박스) */
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            margin-top: 32px;
+            border: 1px solid var(--rule);
+        }
+        .stat-cell {
+            padding: 18px;
+            border-right: 1px solid var(--rule);
             text-align: center;
-            margin-top: 5px;
-            color: #555;
+        }
+        .stat-cell:last-child { border-right: none; }
+        .stat-cell .num {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 900;
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--tiger);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        .stat-cell .lbl {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin-top: 8px;
+        }
+
+        /* === 섹션 공통 === */
+        section { padding: clamp(60px, 8vw, 100px) var(--pad-x); border-bottom: 3px double var(--rule); }
+        section:last-of-type { border-bottom: none; }
+
+        .sect-header {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 16px 24px;
+            align-items: end;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--rule);
+        }
+        .sect-num {
+            font-family: var(--serif);
+            font-weight: 900;
+            font-style: italic;
+            font-size: clamp(3rem, 6vw, 5rem);
+            color: var(--tiger);
+            line-height: 0.85;
+        }
+        .sect-titlewrap { text-align: right; }
+        .sect-meta {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            margin-bottom: 6px;
+        }
+        .sect-title {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+            line-height: 1.05;
+            letter-spacing: -0.01em;
+        }
+        .sect-title .han {
+            font-family: var(--korean);
+            font-style: normal;
+            color: var(--tiger);
+        }
+        .sect-desc {
+            grid-column: 1 / -1;
+            margin-top: 12px;
+            font-family: var(--korean-soft);
+            color: var(--ink-2);
+            max-width: 60ch;
+        }
+
+        /* === 서비스 (에디토리얼 컬럼) === */
+        .articles {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .article {
+            padding: 32px 0;
+            border-top: 1px solid var(--rule);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        .article:first-child { border-top: none; padding-top: 0; }
+        .article-num {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: var(--tiger);
+            text-transform: uppercase;
+        }
+        .article-title {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: clamp(1.5rem, 2.8vw, 2rem);
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+        }
+        .article-title .han {
+            font-family: var(--korean);
+            font-style: normal;
+            color: var(--tiger);
+            font-size: 0.7em;
+        }
+        .article-desc {
+            color: var(--ink-2);
+            font-family: var(--korean-soft);
+            line-height: 1.7;
+        }
+        .article-pull {
+            font-family: var(--serif);
+            font-style: italic;
+            font-size: 1.4rem;
+            line-height: 1.4;
+            color: var(--tiger);
+            border-left: 3px solid var(--tiger);
+            padding-left: 18px;
+            font-weight: 700;
+        }
+        .article-link {
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 2px;
+            align-self: flex-start;
+            transition: color 0.2s, border-color 0.2s;
+            justify-self: flex-start;
+        }
+        .article-link:hover { color: var(--tiger); border-color: var(--tiger); }
+
+        /* === 포트폴리오 (가로 스크롤 갤러리) === */
+        .gallery-scroll {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+            margin: 0 calc(-1 * var(--pad-x));
+            padding-left: var(--pad-x);
+            padding-right: var(--pad-x);
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        .gallery-scroll::-webkit-scrollbar { height: 8px; }
+        .gallery-scroll::-webkit-scrollbar-thumb { background: var(--ink); }
+
+        .frame {
+            flex: 0 0 min(75vw, 360px);
+            scroll-snap-align: start;
+            position: relative;
+            background: var(--bg-2);
+            border: 1px solid var(--rule);
+            padding: 18px 18px 24px;
+        }
+        .frame::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px dashed var(--rule);
+            pointer-events: none;
+        }
+        .frame-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed var(--rule);
+            position: relative;
+            z-index: 1;
+        }
+        .frame-meta .num { color: var(--tiger); font-weight: 600; }
+        .frame-art {
+            aspect-ratio: 1;
+            background: var(--bg);
+            border: 1px solid var(--rule);
+            display: grid;
+            place-items: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .frame-art svg { width: 65%; height: 65%; stroke: var(--ink); fill: none; stroke-width: 1.2; }
+        .frame-art-bg-1 { background: linear-gradient(135deg, var(--bg) 0%, color-mix(in oklab, var(--tiger) 12%, var(--bg)) 100%); }
+        .frame-art-bg-2 { background: linear-gradient(135deg, var(--bg) 0%, color-mix(in oklab, var(--moss) 14%, var(--bg)) 100%); }
+        .frame-art-bg-3 { background: linear-gradient(135deg, var(--bg) 0%, color-mix(in oklab, var(--gold) 16%, var(--bg)) 100%); }
+        .frame-art-bg-4 { background: linear-gradient(135deg, var(--bg) 0%, color-mix(in oklab, var(--tiger-deep) 14%, var(--bg)) 100%); }
+        .frame-art-bg-5 { background: linear-gradient(135deg, var(--bg) 0%, color-mix(in oklab, var(--ink) 8%, var(--bg)) 100%); }
+
+        .frame-title {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+        }
+        .frame-cat {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--tiger);
+            position: relative;
+            z-index: 1;
+        }
+
+        .gallery-note {
+            margin-top: 24px;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .gallery-note::before, .gallery-note::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: var(--rule);
+        }
+
+        /* === ABOUT (장문 에디토리얼) === */
+        .about-wrap {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+        .about-portrait {
+            background: var(--bg-2);
+            border: 1px solid var(--rule);
+            padding: 18px;
+            position: relative;
+        }
+        .about-portrait::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px dashed var(--rule);
+            pointer-events: none;
+        }
+        .portrait-art {
+            aspect-ratio: 4 / 5;
+            background:
+                radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--tiger) 20%, var(--bg)), var(--bg-2));
+            border: 1px solid var(--rule);
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            place-items: center;
+        }
+        .portrait-art::before {
+            content: '虎';
+            font-family: var(--korean);
+            font-weight: 900;
+            font-size: clamp(8rem, 22vw, 16rem);
+            color: color-mix(in oklab, var(--tiger) 28%, transparent);
+            line-height: 1;
+        }
+        .portrait-art::after {
+            content: '作';
+            position: absolute;
+            bottom: 8%;
+            right: 8%;
+            font-family: var(--korean);
+            font-weight: 900;
+            font-size: clamp(3rem, 8vw, 5rem);
+            color: var(--ink);
+        }
+        .portrait-caption {
+            margin-top: 14px;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            color: var(--ink-2);
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-body { position: relative; }
+        .about-body h2 {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+            line-height: 1.15;
+            margin-bottom: 24px;
+        }
+        .about-body p {
+            font-family: var(--korean-soft);
+            font-size: 1.02rem;
+            line-height: 1.85;
+            color: var(--ink-2);
+            margin-bottom: 16px;
+        }
+        .about-body .first p:first-of-type::first-letter {
+            font-family: var(--serif);
+            font-weight: 900;
+            font-style: italic;
+            font-size: 4.2em;
+            float: left;
+            line-height: 0.85;
+            margin: 8px 12px 0 0;
+            color: var(--tiger);
+        }
+
+        .about-quote {
+            margin: 36px 0;
+            padding: 28px 0;
+            border-top: 3px double var(--rule);
+            border-bottom: 3px double var(--rule);
+            text-align: center;
+        }
+        .about-quote .han-quote {
+            font-family: var(--korean);
+            font-weight: 700;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            color: var(--ink);
+            letter-spacing: 0.05em;
+        }
+        .about-quote .han-quote::before, .about-quote .han-quote::after {
+            color: var(--tiger);
+            margin: 0 0.4em;
+        }
+        .about-quote .han-quote::before { content: '〝'; }
+        .about-quote .han-quote::after { content: '〞'; }
+
+        /* 약력 / 경력 — 신문 클래시파이드 스타일 */
+        .resume-block {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--rule);
+        }
+        .resume-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 16px;
+        }
+        .resume-title h3 {
+            font-family: var(--korean);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .resume-title .meta {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--ink-3);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .resume-row {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 16px;
+            padding: 12px 0;
+            border-top: 1px dashed var(--rule);
+            font-family: var(--korean-soft);
+        }
+        .resume-row .role {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--tiger);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .resume-row .info strong { display: block; font-weight: 700; margin-bottom: 2px; }
+        .resume-row .info span { color: var(--ink-3); font-size: 0.92rem; }
+
+        /* === 프로세스 === */
+        .process-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+        .step-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 24px;
+            padding: 28px 0;
+            border-top: 1px solid var(--rule);
+            align-items: start;
+        }
+        .step-row:first-child { border-top: none; }
+        .step-num {
+            font-family: var(--serif);
+            font-weight: 900;
+            font-style: italic;
+            font-size: clamp(3rem, 5vw, 4rem);
+            color: var(--tiger);
+            line-height: 0.85;
+            min-width: 80px;
+        }
+        .step-info h3 {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        .step-info .han {
+            font-family: var(--korean);
+            font-style: normal;
+            color: var(--tiger);
+            font-size: 0.7em;
+            margin-left: 8px;
+        }
+        .step-info p {
+            color: var(--ink-2);
+            font-family: var(--korean-soft);
+        }
+        .step-info .duration {
+            display: inline-block;
+            margin-top: 10px;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink-3);
+            background: var(--bg-2);
+            padding: 4px 10px;
+            border: 1px solid var(--rule);
+        }
+
+        /* === CONTACT (클래시파이드) === */
+        .contact-classifieds {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+        .ad-block {
+            border: 1px solid var(--rule);
+            padding: 22px;
+            background: var(--bg-2);
+            position: relative;
+        }
+        .ad-block.featured {
+            background: var(--ink);
+            color: var(--bg);
+            border-color: var(--ink);
+        }
+        .ad-block.featured .ad-tag { background: var(--tiger); color: var(--bg); }
+        .ad-block.featured .ad-title { color: var(--bg); }
+        .ad-block.featured .ad-info { color: color-mix(in oklab, var(--bg) 75%, transparent); }
+        .ad-block.featured .ad-cta {
+            background: var(--tiger);
+            color: var(--bg);
+            border-color: var(--tiger);
+        }
+        .ad-block.featured .ad-cta:hover { background: var(--tiger-deep); border-color: var(--tiger-deep); }
+        .ad-block.disabled { opacity: 0.5; pointer-events: none; }
+
+        .ad-tag {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            background: var(--ink);
+            color: var(--bg);
+            padding: 3px 10px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .ad-title {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        .ad-title .han {
+            font-family: var(--korean);
+            font-style: normal;
+            color: var(--tiger);
+        }
+        .ad-info {
+            font-family: var(--korean-soft);
+            color: var(--ink-2);
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+        .ad-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--ink);
+            text-decoration: none;
+            padding: 10px 18px;
+            border: 1px solid var(--ink);
+            background: transparent;
+            transition: all 0.2s;
+        }
+        .ad-cta:hover { background: var(--ink); color: var(--bg); }
+        .ad-cta.disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* 폼 (편지지 스타일) */
+        .letter-form {
+            border: 1px solid var(--rule);
+            padding: 22px;
+            background: var(--bg-2);
+            position: relative;
+        }
+        .letter-form::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px dashed var(--rule);
+            pointer-events: none;
+        }
+        .letter-form h3 {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 1;
+        }
+        .letter-form .stamp {
+            position: absolute;
+            top: 16px; right: 16px;
+            width: 56px; height: 56px;
+            border: 2px dashed var(--tiger);
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            color: var(--tiger);
+            transform: rotate(-12deg);
+            text-transform: uppercase;
+            line-height: 1.1;
+            font-weight: 600;
+            z-index: 1;
+        }
+        .field-row { position: relative; margin-bottom: 14px; z-index: 1; }
+        .field-row input, .field-row textarea {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--rule);
+            padding: 14px 14px 8px;
+            font-family: var(--sans);
+            font-size: 0.95rem;
+            color: var(--ink);
+        }
+        .field-row textarea { min-height: 100px; resize: vertical; }
+        .field-row input:focus, .field-row textarea:focus { outline: none; border-color: var(--tiger); }
+        .field-row label {
+            position: absolute;
+            top: 14px; left: 14px;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--ink-3);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            pointer-events: none;
+            transition: all 0.2s;
+            background: var(--bg);
+            padding: 0 4px;
+        }
+        .field-row input:focus + label,
+        .field-row input:not(:placeholder-shown) + label,
+        .field-row textarea:focus + label,
+        .field-row textarea:not(:placeholder-shown) + label {
+            top: -8px;
+            font-size: 0.62rem;
+            color: var(--tiger);
+        }
+        .submit-btn {
+            width: 100%;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            background: var(--ink);
+            color: var(--bg);
+            border: none;
+            padding: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+            z-index: 1;
+        }
+        .submit-btn:hover { background: var(--tiger); }
+
+        /* === COLOPHON 푸터 === */
+        footer {
+            padding: 40px var(--pad-x);
+            background: var(--ink);
+            color: var(--bg);
+        }
+        :root[data-theme="ink"] footer { background: var(--bg-2); color: var(--ink); }
+        .colophon {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            letter-spacing: 0.1em;
+        }
+        .colophon h4 {
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 900;
+            font-size: 1.6rem;
+            letter-spacing: -0.01em;
+            margin-bottom: 8px;
+        }
+        .colophon h4 .han {
+            font-family: var(--korean);
+            font-style: normal;
+            color: var(--tiger);
+            margin-left: 8px;
+        }
+        .colophon-block dt {
+            color: color-mix(in oklab, var(--bg) 60%, transparent);
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 4px;
+        }
+        :root[data-theme="ink"] .colophon-block dt { color: var(--ink-3); }
+        .colophon-block dd { margin-bottom: 8px; }
+        .colophon-block a { color: inherit; text-decoration: underline; text-decoration-color: var(--tiger); }
+
+        .colophon-bottom {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid color-mix(in oklab, var(--bg) 25%, transparent);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.68rem;
+            color: color-mix(in oklab, var(--bg) 55%, transparent);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+        :root[data-theme="ink"] .colophon-bottom { border-color: var(--rule); color: var(--ink-3); }
+
+        /* 마퀴 */
+        .marquee {
+            background: var(--ink);
+            color: var(--bg);
+            padding: 12px 0;
+            overflow: hidden;
+            border-top: 1px solid var(--rule);
+            border-bottom: 1px solid var(--rule);
+        }
+        :root[data-theme="ink"] .marquee { background: var(--tiger); }
+        .marquee-track {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 35s linear infinite;
+            font-family: var(--serif);
+            font-style: italic;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+        }
+        .marquee-track > span { padding: 0 24px; }
+        .marquee-track .star { color: var(--tiger); }
+        :root[data-theme="ink"] .marquee-track .star { color: var(--ink); }
+        @keyframes marquee { to { transform: translateX(-50%); } }
+
+        /* === 미디어 쿼리 === */
+        @media (min-width: 768px) {
+            nav.subnav .nav-list { display: flex; }
+            .hamburger { display: none; }
+            .hero-body { grid-template-columns: 1fr 1fr; gap: 48px; }
+            .vertical-ribbon { display: block; }
+            .articles { grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--rule); }
+            .article {
+                border-top: none;
+                border-left: 1px solid var(--rule);
+                padding: 32px;
+            }
+            .article:first-child { border-left: none; padding-top: 32px; padding-left: 0; }
+            .article:last-child { padding-right: 0; }
+            .about-wrap { grid-template-columns: 1fr 1.4fr; gap: 56px; }
+            .contact-classifieds { grid-template-columns: 1fr 1fr; }
+            .contact-classifieds .letter-form { grid-column: 2; grid-row: 1 / 4; }
+            .colophon { grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px; }
+            .colophon-bottom { flex-direction: row; justify-content: space-between; gap: 16px; }
+        }
+        @media (min-width: 1100px) {
+            .hero-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 56px; align-items: end; }
+            .hero-meta { grid-column: 1 / -1; }
+            .hero-title { grid-column: 1; }
+            .specimen-wrap { grid-column: 2; grid-row: 2 / 4; }
+            .hero-body { grid-column: 1; }
+        }
+
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .marquee-track { animation: none; }
         }
     </style>
 </head>
-<body>
 
-<div class="container">
-    <header class="header">
-        <img src="hojak_logo.png" alt="호작 로고 이미지" class="logo-image">
-        <h1>호 작 (虎作)</h1>
-        <p class="slogan">"쇠를 다루듯, 생각을 빚다"</p>
+<body>
+    <a href="#main" class="skip-link">본문으로 건너뛰기</a>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+    <!-- === MASTHEAD === -->
+    <header class="masthead">
+        <div class="mast-left">
+            <span>VOL. <strong style="color:var(--ink)">XXVI</strong></span>
+            <span data-lang="mast_date">2026 · 五月</span>
+        </div>
+        <div class="mast-center">
+            <em>The</em> <span class="han">虎作</span> <em>Quarterly</em>
+        </div>
+        <div class="mast-right">
+            <button class="mast-btn" onclick="toggleTheme()" aria-label="테마">
+                <span id="themeLabel">INK</span>
+            </button>
+            <button class="mast-btn" onclick="toggleLanguage()" id="langBtn" aria-label="언어">ENG</button>
+        </div>
     </header>
 
-    <section>
-        <h2 class="section-title">주인장 약력 (主人長 略歷)</h2>
-        <p>
-            호랑이처럼 굳건한 정신으로 기술을 벼리는 '호작'의 주인장입니다. 오랜 시간 닦아온 기계 공학적 지식과 3D 프린팅 기술을 결합하여, 실용적이면서도 미학적인 창작물을 선보입니다. 전통의 장인 정신으로 현대 기술을 다루겠습니다.
-        </p>
-
-        <h3 class="section-title" style="font-size: 1.4em; border-left: none;">주요 기량</h3>
-        <ul>
-            <li class="list-item">3D프린터 전공: 모델링부터 출력, 후가공까지 전 과정 숙련</li>
-            <li class="list-item">기계공학과 (메카트로닉스) 전공: 정밀 설계 및 안정적인 제작 기반</li>
+    <!-- === SUB NAV === -->
+    <nav class="subnav">
+        <span class="nav-issue">№ 26 · ATELIER OF PRECISION</span>
+        <ul class="nav-list">
+            <li><a href="#services" data-lang="nav_services">Services</a></li>
+            <li><a href="#portfolio" data-lang="nav_portfolio">Works</a></li>
+            <li><a href="#about" data-lang="nav_about">Maker</a></li>
+            <li><a href="#process" data-lang="nav_process">Process</a></li>
         </ul>
+        <button class="hamburger" onclick="toggleMenu()" aria-label="메뉴" id="hamBtn">
+            <span></span><span></span><span></span>
+        </button>
+        <a href="#contact" class="nav-cta" data-lang="nav_contact" style="display:none">Inquire</a>
+    </nav>
 
-        <h3 class="section-title" style="font-size: 1.4em; border-left: none;">벼림의 기록 (경력)</h3>
-        <ul>
-            <li class="list-item">서울대학교: [업무 내용 간략히]</li>
-            <li class="list-item">강남구청: [업무 내용 간략히]</li>
-            <li class="list-item">금천구청: [업무 내용 간략히]</li>
-        </ul>
-    </section>
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#services" onclick="closeMenu()"><span data-lang="nav_services">Services</span><span class="num">01</span></a>
+        <a href="#portfolio" onclick="closeMenu()"><span data-lang="nav_portfolio">Works</span><span class="num">02</span></a>
+        <a href="#about" onclick="closeMenu()"><span data-lang="nav_about">Maker</span><span class="num">03</span></a>
+        <a href="#process" onclick="closeMenu()"><span data-lang="nav_process">Process</span><span class="num">04</span></a>
+        <a href="#contact" onclick="closeMenu()"><span data-lang="nav_contact">Inquire</span><span class="num">05</span></a>
+    </div>
 
-    <section>
-        <h2 class="section-title">호작의 결과물 (虎作之品)</h2>
-        <div class="gallery">
-            <div class="gallery-item">
-                <img src="결과물_이미지_1_경로" alt="작품1">
-                <p>작품명: [간단한 이름]</p>
+    <main id="main">
+        <!-- === HERO === -->
+        <section class="hero" id="home" style="border-top:none;">
+            <div class="hero-grid">
+                <div class="hero-meta">
+                    <span>FEATURE · 1 / 5</span>
+                    <span data-lang="hero_meta_author">by 主人長 · est. 2018</span>
+                    <span>SEOUL · KR</span>
+                </div>
+
+                <h1 class="hero-title reveal">
+                    <span class="line-1"><em>Tiger</em><span class="amp">&amp;</span></span>
+                    <span class="line-2"><span class="han">虎作</span> Maker.</span>
+                </h1>
+
+                <div class="hero-body">
+                    <div class="hero-lede reveal">
+                        <p data-lang="hero_lede1">
+                            <span class="drop-cap">호</span>랑이처럼 굳건한 정신으로 기술을 벼리는 호작의 주인장입니다.
+                            오랜 시간 닦아온 기계공학적 지식과 3D 프린팅 기술을 결합하여, <em>실용적이면서도 미학적인</em> 창작물을 선보입니다.
+                        </p>
+                        <p data-lang="hero_lede2">전통의 장인 정신으로 현대 기술을 다루겠습니다.</p>
+                        <div class="hero-byline">
+                            <span><strong>WORDS</strong> by HOJAK</span>
+                            <span><strong>EST.</strong> SEOUL · 2018</span>
+                            <span data-lang="byline_filed"><strong>FILED</strong> 5월 2026</span>
+                        </div>
+                    </div>
+
+                    <!-- Spline 표본판 -->
+                    <div class="specimen-wrap reveal">
+                        <figure class="specimen">
+                            <span class="corner tl"></span>
+                            <span class="corner tr"></span>
+                            <span class="corner bl"></span>
+                            <span class="corner br"></span>
+
+                            <div class="specimen-header">
+                                <span>SPECIMEN № A-26-001</span>
+                                <span class="live">LIVE</span>
+                            </div>
+
+                            <div class="specimen-frame">
+                                <div class="specimen-loader" id="splineLoader">LOADING SPECIMEN</div>
+                                <iframe
+                                    id="heroSpline"
+                                    src="https://my.spline.design/nexbotrobotcharacterconcept-OaqxA3WQe9GUXZiv2RbSPBWA/"
+                                    title="HOJAK 3D Specimen"
+                                    loading="lazy"
+                                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                                    onload="this.classList.add('loaded'); document.getElementById('splineLoader').classList.add('hidden');"></iframe>
+                            </div>
+
+                            <figcaption class="specimen-caption">
+                                <span class="label">Plate I.</span>
+                                A 3D-printed character specimen, courtesy of the workshop. <em>Drag to rotate, scroll to zoom.</em> Rendered in real-time via WebGL.
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+
+                <div class="hero-stats reveal">
+                    <div class="stat-cell">
+                        <div class="num" data-target="120" data-suffix="+">0</div>
+                        <div class="lbl" data-lang="stat_projects">완료 프로젝트</div>
+                    </div>
+                    <div class="stat-cell">
+                        <div class="num" data-target="0.01" data-decimals="2">0</div>
+                        <div class="lbl" data-lang="stat_precision">mm 정밀도</div>
+                    </div>
+                    <div class="stat-cell">
+                        <div class="num" data-target="24" data-suffix="H">0</div>
+                        <div class="lbl" data-lang="stat_delivery">신속 제작</div>
+                    </div>
+                </div>
             </div>
-            <div class="gallery-item">
-                <img src="결과물_이미지_2_경로" alt="작품2">
-                <p>작품명: [간단한 이름]</p>
+        </section>
+
+        <!-- === MARQUEE === -->
+        <div class="marquee" aria-hidden="true">
+            <div class="marquee-track">
+                <span>HOJAK</span><span class="star">✦</span>
+                <span>3D PRINTING ATELIER</span><span class="star">✦</span>
+                <span>虎作</span><span class="star">✦</span>
+                <span><em>쇠를 다루듯, 생각을 빚다</em></span><span class="star">✦</span>
+                <span>SINCE 2018</span><span class="star">✦</span>
+                <span>SEOUL</span><span class="star">✦</span>
+                <span>HOJAK</span><span class="star">✦</span>
+                <span>3D PRINTING ATELIER</span><span class="star">✦</span>
+                <span>虎作</span><span class="star">✦</span>
+                <span><em>쇠를 다루듯, 생각을 빚다</em></span><span class="star">✦</span>
+                <span>SINCE 2018</span><span class="star">✦</span>
+                <span>SEOUL</span><span class="star">✦</span>
             </div>
+        </div>
+
+        <!-- === SERVICES === -->
+        <section class="services" id="services">
+            <div class="sect-header reveal">
+                <div class="sect-num">02</div>
+                <div class="sect-titlewrap">
+                    <div class="sect-meta">FEATURE · ESSAY</div>
+                    <h2 class="sect-title"><em>Three Disciplines,</em><br>One <span class="han">虎作</span> Method.</h2>
+                </div>
+                <p class="sect-desc" data-lang="services_desc">
+                    산업용 프로토타입부터 예술 작품까지, 호작이 다루는 세 가지 정밀의 영역.
+                </p>
             </div>
-        <p style="text-align: center; margin-top: 20px; font-style: italic; color: #777;">더 많은 작품은 인스타그램에서 확인 가능합니다.</p>
-    </section>
 
-    <section class="links-container">
-        <h2 class="section-title" style="margin-top: 0; padding-top: 10px;">소통과 문의 (聯絡과 問議)</h2>
-        <p>원하시는 물품 제작 및 기술 문의는 아래 창구를 이용해 주십시오.</p>
+            <div class="articles">
+                <article class="article reveal">
+                    <span class="article-num">№ I · 工業</span>
+                    <h3 class="article-title"><em>Industrial</em><br>Prototyping</h3>
+                    <p class="article-desc" data-lang="service1_desc">
+                        제품 개발 단계의 프로토타입을 고정밀 3D 프린팅으로 빠르게 제작합니다.
+                        설계 검증과 테스트에 최적화된 솔루션을 제공합니다.
+                    </p>
+                    <p class="article-pull" data-lang="pull_1">"빠르게, 정확하게, 다시 빚어낼 수 있도록."</p>
+                    <a href="#contact" class="article-link" data-lang="learn_more">Read More — →</a>
+                </article>
+                <article class="article reveal">
+                    <span class="article-num">№ II · 美術</span>
+                    <h3 class="article-title"><em>Art &amp;</em><br>Sculpture</h3>
+                    <p class="article-desc" data-lang="service2_desc">
+                        예술가와 디자이너를 위한 맞춤형 조형물 제작 서비스입니다.
+                        섬세한 디테일과 고급 마감 처리로 작품의 가치를 높입니다.
+                    </p>
+                    <p class="article-pull" data-lang="pull_2">"기계로 빚되, 손으로 마감한다."</p>
+                    <a href="#contact" class="article-link" data-lang="learn_more">Read More — →</a>
+                </article>
+                <article class="article reveal">
+                    <span class="article-num">№ III · 機械</span>
+                    <h3 class="article-title"><em>SLA &amp;</em><br>FDM Print</h3>
+                    <p class="article-desc" data-lang="service3_desc">
+                        프로젝트 특성에 맞는 최적의 프린팅 방식을 제안합니다.
+                        SLA의 정밀함과 FDM의 효율성을 적재적소에 활용합니다.
+                    </p>
+                    <p class="article-pull" data-lang="pull_3">"적재적소, 그것이 진짜 기술이다."</p>
+                    <a href="#contact" class="article-link" data-lang="learn_more">Read More — →</a>
+                </article>
+            </div>
+        </section>
 
-        <a href="숨고_고수_링크_주소" class="link-button">
-            **숨고 고수 링크 (맞춤 제작 및 문의)**
-        </a>
+        <!-- === PORTFOLIO === -->
+        <section class="portfolio" id="portfolio">
+            <div class="sect-header reveal">
+                <div class="sect-num">03</div>
+                <div class="sect-titlewrap">
+                    <div class="sect-meta">PLATES · PORTFOLIO</div>
+                    <h2 class="sect-title"><em>Selected</em><br><span class="han">虎作之品</span> · Works</h2>
+                </div>
+                <p class="sect-desc" data-lang="portfolio_desc">
+                    호작이 만들어낸 다양한 프로젝트들. 옆으로 넘기며 감상하세요.
+                </p>
+            </div>
 
-        <a href="#" class="link-button disabled-button" onclick="return false;">
-            인스타그램 (준비 중)
-        </a>
+            <div class="gallery-scroll">
+                <figure class="frame reveal">
+                    <div class="frame-meta"><span class="num">PL. 01</span><span>ARCHITECTURE</span></div>
+                    <div class="frame-art frame-art-bg-1">
+                        <svg viewBox="0 0 100 100"><polygon points="50,10 90,40 90,80 10,80 10,40"/><polygon points="50,10 50,50 90,40"/><polygon points="50,50 50,90 10,80"/><polygon points="50,50 50,90 90,80"/><line x1="35" y1="60" x2="35" y2="80"/><line x1="50" y1="60" x2="50" y2="90"/><line x1="65" y1="60" x2="65" y2="80"/></svg>
+                    </div>
+                    <div class="frame-title" data-lang="frame_1"><em>건축 모형</em></div>
+                    <div class="frame-cat">Architecture Model</div>
+                </figure>
+                <figure class="frame reveal">
+                    <div class="frame-meta"><span class="num">PL. 02</span><span>ART &amp; DESIGN</span></div>
+                    <div class="frame-art frame-art-bg-2">
+                        <svg viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60"/><rect x="30" y="30" width="40" height="40"/><circle cx="50" cy="50" r="10"/><line x1="20" y1="20" x2="30" y2="30"/><line x1="80" y1="20" x2="70" y2="30"/><line x1="20" y1="80" x2="30" y2="70"/><line x1="80" y1="80" x2="70" y2="70"/></svg>
+                    </div>
+                    <div class="frame-title" data-lang="frame_2"><em>아트 프레임</em></div>
+                    <div class="frame-cat">Art Frame Series</div>
+                </figure>
+                <figure class="frame reveal">
+                    <div class="frame-meta"><span class="num">PL. 03</span><span>FIGURE</span></div>
+                    <div class="frame-art frame-art-bg-3">
+                        <svg viewBox="0 0 100 100"><circle cx="50" cy="35" r="18"/><rect x="32" y="50" width="36" height="30" rx="3"/><line x1="50" y1="20" x2="50" y2="10"/><circle cx="50" cy="8" r="3"/><line x1="32" y1="62" x2="22" y2="62"/><line x1="68" y1="62" x2="78" y2="62"/><circle cx="44" cy="32" r="2"/><circle cx="56" cy="32" r="2"/></svg>
+                    </div>
+                    <div class="frame-title" data-lang="frame_3"><em>로봇 피규어</em></div>
+                    <div class="frame-cat">Robot Figure</div>
+                </figure>
+                <figure class="frame reveal">
+                    <div class="frame-meta"><span class="num">PL. 04</span><span>INDUSTRIAL</span></div>
+                    <div class="frame-art frame-art-bg-4">
+                        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32"/><circle cx="50" cy="50" r="20"/><circle cx="50" cy="50" r="8"/><line x1="50" y1="18" x2="50" y2="10"/><line x1="50" y1="82" x2="50" y2="90"/><line x1="18" y1="50" x2="10" y2="50"/><line x1="82" y1="50" x2="90" y2="50"/><line x1="27" y1="27" x2="22" y2="22"/><line x1="73" y1="27" x2="78" y2="22"/><line x1="27" y1="73" x2="22" y2="78"/><line x1="73" y1="73" x2="78" y2="78"/></svg>
+                    </div>
+                    <div class="frame-title" data-lang="frame_4"><em>산업 부품</em></div>
+                    <div class="frame-cat">Industrial Parts</div>
+                </figure>
+                <figure class="frame reveal">
+                    <div class="frame-meta"><span class="num">PL. 05</span><span>JEWELRY</span></div>
+                    <div class="frame-art frame-art-bg-5">
+                        <svg viewBox="0 0 100 100"><polygon points="50,15 70,40 60,80 40,80 30,40"/><polygon points="50,15 70,40 50,55 30,40"/><polygon points="30,40 50,55 40,80"/><polygon points="70,40 50,55 60,80"/><line x1="50" y1="55" x2="50" y2="80"/></svg>
+                    </div>
+                    <div class="frame-title" data-lang="frame_5"><em>주얼리 프로토타입</em></div>
+                    <div class="frame-cat">Jewelry Prototype</div>
+                </figure>
+            </div>
 
-        <a href="#" class="link-button disabled-button" onclick="return false;">
-            스마트스토어 (개설 예정)
-        </a>
-    </section>
+            <p class="gallery-note" data-lang="portfolio_more">
+                ← MORE PLATES @ INSTAGRAM →
+            </p>
+        </section>
 
-</div>
+        <!-- === ABOUT === -->
+        <section class="about" id="about">
+            <div class="sect-header reveal">
+                <div class="sect-num">04</div>
+                <div class="sect-titlewrap">
+                    <div class="sect-meta">PROFILE · MAKER</div>
+                    <h2 class="sect-title"><em>About the</em><br>Maker · <span class="han">主人長</span></h2>
+                </div>
+            </div>
 
+            <div class="about-wrap">
+                <figure class="about-portrait reveal">
+                    <div class="portrait-art"></div>
+                    <figcaption class="portrait-caption">
+                        Plate II. — A self-portrait drawn in characters. <em>HOJAK</em>, 主人長.
+                    </figcaption>
+                </figure>
+
+                <div class="about-body reveal first">
+                    <h2 data-lang="about_title">호랑이의 정신으로,<br><em>정밀함을 빚다.</em></h2>
+                    <p data-lang="about_desc1">
+                        호랑이처럼 굳건한 정신으로 기술을 벼리는 '호작'의 주인장입니다.
+                        오랜 시간 닦아온 기계공학적 지식과 3D 프린팅 기술을 결합하여,
+                        실용적이면서도 미학적인 창작물을 선보입니다.
+                    </p>
+                    <p data-lang="about_desc2">전통의 장인 정신으로 현대 기술을 다루겠습니다.</p>
+
+                    <div class="about-quote">
+                        <p class="han-quote" data-lang="about_quote">쇠를 다루듯, 생각을 빚다</p>
+                    </div>
+
+                    <div class="resume-block">
+                        <div class="resume-title">
+                            <h3 data-lang="skills_title">주요 기량</h3>
+                            <span class="meta">CORE · SKILLS</span>
+                        </div>
+                        <div class="resume-row">
+                            <span class="role">Major / I</span>
+                            <div class="info">
+                                <strong data-lang="skill_1_t">3D 프린터 전공</strong>
+                                <span data-lang="skill_1_d">모델링부터 출력, 후가공까지 전 과정 숙련</span>
+                            </div>
+                        </div>
+                        <div class="resume-row">
+                            <span class="role">Major / II</span>
+                            <div class="info">
+                                <strong data-lang="skill_2_t">기계공학 (메카트로닉스)</strong>
+                                <span data-lang="skill_2_d">정밀 설계 및 안정적인 제작 기반</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resume-block">
+                        <div class="resume-title">
+                            <h3 data-lang="career_title">벼림의 기록 (경력)</h3>
+                            <span class="meta">LEDGER · CAREER</span>
+                        </div>
+                        <div class="resume-row">
+                            <span class="role">2024</span>
+                            <div class="info">
+                                <strong data-lang="career_1_t">서울대학교</strong>
+                                <span data-lang="career_1_d">3D 프린팅 관련 프로젝트 수행</span>
+                            </div>
+                        </div>
+                        <div class="resume-row">
+                            <span class="role">2023</span>
+                            <div class="info">
+                                <strong data-lang="career_2_t">강남구청</strong>
+                                <span data-lang="career_2_d">맞춤형 3D 프린팅 의뢰 제작</span>
+                            </div>
+                        </div>
+                        <div class="resume-row">
+                            <span class="role">2022</span>
+                            <div class="info">
+                                <strong data-lang="career_3_t">금천구청</strong>
+                                <span data-lang="career_3_d">행정 시설용 부품 및 모형 제작</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- === PROCESS === -->
+        <section class="process" id="process">
+            <div class="sect-header reveal">
+                <div class="sect-num">05</div>
+                <div class="sect-titlewrap">
+                    <div class="sect-meta">METHOD · PROCESS</div>
+                    <h2 class="sect-title"><em>Four Steps</em><br>to Precision · <span class="han">四段</span></h2>
+                </div>
+                <p class="sect-desc" data-lang="process_desc">체계적인 4단계 프로세스로 완벽한 결과물을 만들어냅니다.</p>
+            </div>
+
+            <div class="process-grid">
+                <div class="step-row reveal">
+                    <div class="step-num">01</div>
+                    <div class="step-info">
+                        <h3><em>Consultation</em><span class="han">問議</span></h3>
+                        <p data-lang="step1_desc">프로젝트 요구사항 분석 및 최적의 제작 방식 제안</p>
+                        <span class="duration">⏱ 1–2 DAYS</span>
+                    </div>
+                </div>
+                <div class="step-row reveal">
+                    <div class="step-num">02</div>
+                    <div class="step-info">
+                        <h3><em>3D Modeling</em><span class="han">設計</span></h3>
+                        <p data-lang="step2_desc">도면 검토 및 프린팅 최적화 모델링 작업</p>
+                        <span class="duration">⏱ 2–5 DAYS</span>
+                    </div>
+                </div>
+                <div class="step-row reveal">
+                    <div class="step-num">03</div>
+                    <div class="step-info">
+                        <h3><em>Printing</em><span class="han">出力</span></h3>
+                        <p data-lang="step3_desc">고정밀 장비를 활용한 3D 프린팅 진행</p>
+                        <span class="duration">⏱ 1–7 DAYS</span>
+                    </div>
+                </div>
+                <div class="step-row reveal">
+                    <div class="step-num">04</div>
+                    <div class="step-info">
+                        <h3><em>Finishing</em><span class="han">後加工</span></h3>
+                        <p data-lang="step4_desc">품질 검수 후 마감 처리 및 안전 배송</p>
+                        <span class="duration">⏱ 1–3 DAYS</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- === CONTACT (Classifieds) === -->
+        <section class="contact" id="contact">
+            <div class="sect-header reveal">
+                <div class="sect-num">06</div>
+                <div class="sect-titlewrap">
+                    <div class="sect-meta">CLASSIFIEDS · INQUIRE</div>
+                    <h2 class="sect-title"><em>Get in</em><br>Touch · <span class="han">聯絡</span></h2>
+                </div>
+                <p class="sect-desc" data-lang="contact_desc">
+                    원하시는 물품 제작 및 기술 문의는 아래 창구를 이용해 주십시오.
+                </p>
+            </div>
+
+            <div class="contact-classifieds">
+                <div class="ad-block featured reveal">
+                    <span class="ad-tag">FEATURED</span>
+                    <h3 class="ad-title"><em>숨고 고수</em> <span class="han">高手</span></h3>
+                    <p class="ad-info" data-lang="link_soomgo_d">검증된 고수와 직접 상담하고 맞춤 제작을 의뢰하세요. 24시간 내 답변.</p>
+                    <a href="숨고_고수_링크_주소" class="ad-cta" data-lang="link_soomgo">숨고에서 문의 →</a>
+                </div>
+                <div class="ad-block disabled reveal">
+                    <span class="ad-tag">SOON</span>
+                    <h3 class="ad-title"><em>Instagram</em></h3>
+                    <p class="ad-info" data-lang="badge_preparing_d">곧 작업물 아카이브를 인스타그램에 공개합니다.</p>
+                    <span class="ad-cta disabled" data-lang="cta_preparing">준비 중 ···</span>
+                </div>
+                <div class="ad-block disabled reveal">
+                    <span class="ad-tag">SOON</span>
+                    <h3 class="ad-title"><em>Smart Store</em></h3>
+                    <p class="ad-info" data-lang="badge_coming_d">레디메이드 라인업을 스마트스토어에 개설 예정입니다.</p>
+                    <span class="ad-cta disabled" data-lang="cta_coming">개설 예정 ···</span>
+                </div>
+
+                <form class="letter-form reveal" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                    <span class="stamp">VIA AIR<br>MAIL ✦</span>
+                    <h3><em>Direct Letter</em><span class="han" style="font-style:normal;color:var(--tiger);font-size:0.7em;margin-left:8px;">親書</span></h3>
+                    <div class="field-row">
+                        <input type="text" id="f-name" name="name" placeholder=" " required>
+                        <label for="f-name" data-lang="form_name">이름 / NAME</label>
+                    </div>
+                    <div class="field-row">
+                        <input type="email" id="f-email" name="email" placeholder=" " required>
+                        <label for="f-email" data-lang="form_email">이메일 / EMAIL</label>
+                    </div>
+                    <div class="field-row">
+                        <textarea id="f-msg" name="message" placeholder=" " required></textarea>
+                        <label for="f-msg" data-lang="form_message">전언 / MESSAGE</label>
+                    </div>
+                    <button type="submit" class="submit-btn" data-lang="form_submit">SEND ✉ 발신</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- === COLOPHON FOOTER === -->
+    <footer>
+        <div class="colophon">
+            <div class="colophon-block">
+                <h4>HOJAK <span class="han">虎作</span></h4>
+                <p style="color:color-mix(in oklab, var(--bg) 75%, transparent);font-family:var(--korean-soft);font-size:0.85rem;font-family:var(--serif);font-style:italic;">
+                    Atelier of Precision · 3D Printing Studio · Seoul, KR.
+                </p>
+            </div>
+            <div class="colophon-block">
+                <dl>
+                    <dt>Studio</dt>
+                    <dd>Seoul, Korea</dd>
+                    <dt>Email</dt>
+                    <dd><a href="mailto:hello@hojak.studio">hello@hojak.studio</a></dd>
+                </dl>
+            </div>
+            <div class="colophon-block">
+                <dl>
+                    <dt>Type</dt>
+                    <dd>Playfair Display<br>IBM Plex Mono<br>Noto Serif KR</dd>
+                </dl>
+            </div>
+            <div class="colophon-block">
+                <dl>
+                    <dt>Channels</dt>
+                    <dd><a href="#">Instagram</a></dd>
+                    <dd><a href="#">YouTube</a></dd>
+                    <dd><a href="#">Behance</a></dd>
+                </dl>
+            </div>
+        </div>
+        <div class="colophon-bottom">
+            <span>© MMXXVI · HOJAK STUDIO · ALL RIGHTS RESERVED</span>
+            <span>VOL. XXVI · ISSUE № 26 · MAY 2026</span>
+            <span>SET IN PLAYFAIR &amp; PLEX MONO</span>
+        </div>
+    </footer>
+
+    <script>
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // 테마 토글
+        const savedTheme = localStorage.getItem('theme-v6') || 'paper';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('themeLabel').textContent = savedTheme === 'paper' ? 'INK' : 'PAPER';
+        function toggleTheme() {
+            const cur = document.documentElement.getAttribute('data-theme');
+            const next = cur === 'paper' ? 'ink' : 'paper';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme-v6', next);
+            document.getElementById('themeLabel').textContent = next === 'paper' ? 'INK' : 'PAPER';
+        }
+
+        // 진척
+        const progressEl = document.getElementById('scrollProgress');
+        function updateProgress() {
+            const h = document.documentElement;
+            const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+            progressEl.style.setProperty('--progress', (scrolled * 100) + '%');
+        }
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        updateProgress();
+
+        // 메뉴
+        const hamBtn = document.getElementById('hamBtn');
+        function toggleMenu() {
+            const m = document.getElementById('mobileMenu');
+            const active = m.classList.toggle('active');
+            hamBtn.classList.toggle('active');
+            hamBtn.setAttribute('aria-expanded', active);
+            document.body.style.overflow = active ? 'hidden' : '';
+        }
+        function closeMenu() {
+            document.getElementById('mobileMenu').classList.remove('active');
+            hamBtn.classList.remove('active');
+            hamBtn.setAttribute('aria-expanded', 'false');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+        // Reveal
+        const revealObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    revealObs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+        // 카운터
+        const counterObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const target = parseFloat(el.dataset.target);
+                    const decimals = parseInt(el.dataset.decimals || '0');
+                    const suffix = el.dataset.suffix || '';
+                    const duration = reducedMotion ? 1 : 1500;
+                    const start = performance.now();
+                    function step(now) {
+                        const t = Math.min((now - start) / duration, 1);
+                        const eased = 1 - Math.pow(1 - t, 3);
+                        const v = (target * eased).toFixed(decimals);
+                        el.textContent = v + suffix;
+                        if (t < 1) requestAnimationFrame(step);
+                    }
+                    requestAnimationFrame(step);
+                    counterObs.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.stat-cell .num').forEach(el => counterObs.observe(el));
+
+        // 부드러운 앵커
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                const href = a.getAttribute('href');
+                if (href.length > 1) {
+                    const t = document.querySelector(href);
+                    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth' }); }
+                }
+            });
+        });
+
+        // 언어 토글
+        const i18n = {
+            ko: {
+                btn_label: 'ENG',
+                mast_date: '2026 · 五月',
+                nav_services: 'Services', nav_portfolio: 'Works', nav_about: 'Maker', nav_process: 'Process', nav_contact: 'Inquire',
+                hero_meta_author: 'by 主人長 · est. 2018',
+                hero_lede1: '<span class="drop-cap">호</span>랑이처럼 굳건한 정신으로 기술을 벼리는 호작의 주인장입니다. 오랜 시간 닦아온 기계공학적 지식과 3D 프린팅 기술을 결합하여, <em>실용적이면서도 미학적인</em> 창작물을 선보입니다.',
+                hero_lede2: '전통의 장인 정신으로 현대 기술을 다루겠습니다.',
+                byline_filed: '<strong>FILED</strong> 5월 2026',
+                stat_projects: '완료 프로젝트', stat_precision: 'mm 정밀도', stat_delivery: '신속 제작',
+                services_desc: '산업용 프로토타입부터 예술 작품까지, 호작이 다루는 세 가지 정밀의 영역.',
+                service1_desc: '제품 개발 단계의 프로토타입을 고정밀 3D 프린팅으로 빠르게 제작합니다. 설계 검증과 테스트에 최적화된 솔루션을 제공합니다.',
+                service2_desc: '예술가와 디자이너를 위한 맞춤형 조형물 제작 서비스입니다. 섬세한 디테일과 고급 마감 처리로 작품의 가치를 높입니다.',
+                service3_desc: '프로젝트 특성에 맞는 최적의 프린팅 방식을 제안합니다. SLA의 정밀함과 FDM의 효율성을 적재적소에 활용합니다.',
+                pull_1: '"빠르게, 정확하게, 다시 빚어낼 수 있도록."',
+                pull_2: '"기계로 빚되, 손으로 마감한다."',
+                pull_3: '"적재적소, 그것이 진짜 기술이다."',
+                learn_more: 'Read More — →',
+                portfolio_desc: '호작이 만들어낸 다양한 프로젝트들. 옆으로 넘기며 감상하세요.',
+                portfolio_more: '← MORE PLATES @ INSTAGRAM →',
+                frame_1: '<em>건축 모형</em>',
+                frame_2: '<em>아트 프레임</em>',
+                frame_3: '<em>로봇 피규어</em>',
+                frame_4: '<em>산업 부품</em>',
+                frame_5: '<em>주얼리 프로토타입</em>',
+                about_title: '호랑이의 정신으로,<br><em>정밀함을 빚다.</em>',
+                about_desc1: '호랑이처럼 굳건한 정신으로 기술을 벼리는 \'호작\'의 주인장입니다. 오랜 시간 닦아온 기계공학적 지식과 3D 프린팅 기술을 결합하여, 실용적이면서도 미학적인 창작물을 선보입니다.',
+                about_desc2: '전통의 장인 정신으로 현대 기술을 다루겠습니다.',
+                about_quote: '쇠를 다루듯, 생각을 빚다',
+                skills_title: '주요 기량',
+                skill_1_t: '3D 프린터 전공', skill_1_d: '모델링부터 출력, 후가공까지 전 과정 숙련',
+                skill_2_t: '기계공학 (메카트로닉스)', skill_2_d: '정밀 설계 및 안정적인 제작 기반',
+                career_title: '벼림의 기록 (경력)',
+                career_1_t: '서울대학교', career_1_d: '3D 프린팅 관련 프로젝트 수행',
+                career_2_t: '강남구청', career_2_d: '맞춤형 3D 프린팅 의뢰 제작',
+                career_3_t: '금천구청', career_3_d: '행정 시설용 부품 및 모형 제작',
+                process_desc: '체계적인 4단계 프로세스로 완벽한 결과물을 만들어냅니다.',
+                step1_desc: '프로젝트 요구사항 분석 및 최적의 제작 방식 제안',
+                step2_desc: '도면 검토 및 프린팅 최적화 모델링 작업',
+                step3_desc: '고정밀 장비를 활용한 3D 프린팅 진행',
+                step4_desc: '품질 검수 후 마감 처리 및 안전 배송',
+                contact_desc: '원하시는 물품 제작 및 기술 문의는 아래 창구를 이용해 주십시오.',
+                link_soomgo: '숨고에서 문의 →',
+                link_soomgo_d: '검증된 고수와 직접 상담하고 맞춤 제작을 의뢰하세요. 24시간 내 답변.',
+                badge_preparing_d: '곧 작업물 아카이브를 인스타그램에 공개합니다.',
+                badge_coming_d: '레디메이드 라인업을 스마트스토어에 개설 예정입니다.',
+                cta_preparing: '준비 중 ···',
+                cta_coming: '개설 예정 ···',
+                form_name: '이름 / NAME', form_email: '이메일 / EMAIL', form_message: '전언 / MESSAGE',
+                form_submit: 'SEND ✉ 발신'
+            },
+            en: {
+                btn_label: '한글',
+                mast_date: 'MAY · 2026',
+                nav_services: 'Services', nav_portfolio: 'Works', nav_about: 'Maker', nav_process: 'Process', nav_contact: 'Inquire',
+                hero_meta_author: 'by THE MAKER · est. 2018',
+                hero_lede1: '<span class="drop-cap">F</span>orged with the firm spirit of a tiger, HOJAK\'s maker brings together years of mechanical-engineering know-how and 3D-printing craft to produce works that are <em>both practical and aesthetic</em>.',
+                hero_lede2: 'Modern technology, handled with the discipline of a traditional artisan.',
+                byline_filed: '<strong>FILED</strong> MAY 2026',
+                stat_projects: 'PROJECTS', stat_precision: 'mm PRECISION', stat_delivery: 'FAST DELIVERY',
+                services_desc: 'From industrial prototypes to art pieces — three disciplines of precision.',
+                service1_desc: 'Rapid, high-precision prototyping for product development. Optimized solutions for design verification and testing.',
+                service2_desc: 'Custom sculpture production for artists and designers — delicate detail with premium finishing.',
+                service3_desc: 'We recommend the optimal printing method per project — SLA precision and FDM efficiency where they matter.',
+                pull_1: '"Fast, precise, and ready to forge again."',
+                pull_2: '"Forged by machine, finished by hand."',
+                pull_3: '"The right method in the right place — that\'s true craft."',
+                learn_more: 'Read More — →',
+                portfolio_desc: 'Selected works. Scroll horizontally to browse the plates.',
+                portfolio_more: '← MORE PLATES @ INSTAGRAM →',
+                frame_1: '<em>Architecture Model</em>',
+                frame_2: '<em>Art Frame Series</em>',
+                frame_3: '<em>Robot Figure</em>',
+                frame_4: '<em>Industrial Parts</em>',
+                frame_5: '<em>Jewelry Prototype</em>',
+                about_title: 'Crafting precision,<br><em>with tiger spirit.</em>',
+                about_desc1: 'Forged with the firm spirit of a tiger, HOJAK\'s maker combines years of mechanical-engineering knowledge with 3D-printing expertise to produce works that are both practical and aesthetic.',
+                about_desc2: 'Modern technology, handled with traditional craftsmanship.',
+                about_quote: 'Thinking like smithing',
+                skills_title: 'Core Skills',
+                skill_1_t: '3D Printing Major', skill_1_d: 'Full pipeline: modeling, printing, finishing',
+                skill_2_t: 'Mechanical Eng. (Mechatronics)', skill_2_d: 'Precise design and stable production',
+                career_title: 'Career Ledger',
+                career_1_t: 'Seoul Nat\'l University', career_1_d: '3D-printing project execution',
+                career_2_t: 'Gangnam-gu Office', career_2_d: 'Custom 3D-printing commissions',
+                career_3_t: 'Geumcheon-gu Office', career_3_d: 'Parts and models for administrative facilities',
+                process_desc: 'Perfect results through our systematic 4-step process.',
+                step1_desc: 'Requirements analysis and optimal production proposal',
+                step2_desc: 'Drawing review and print-optimized modeling',
+                step3_desc: 'Production with high-precision equipment',
+                step4_desc: 'Quality inspection, finishing, and safe delivery',
+                contact_desc: 'For custom production and technical inquiries, please use the channels below.',
+                link_soomgo: 'Inquire on Soomgo →',
+                link_soomgo_d: 'Direct consultation with a verified pro. Replies within 24 hours.',
+                badge_preparing_d: 'Our work archive on Instagram is opening soon.',
+                badge_coming_d: 'A ready-made line will launch on Smart Store soon.',
+                cta_preparing: 'COMING SOON ···',
+                cta_coming: 'LAUNCHING ···',
+                form_name: 'Name', form_email: 'Email', form_message: 'Message',
+                form_submit: 'SEND ✉'
+            }
+        };
+        let currentLang = 'ko';
+        function toggleLanguage() {
+            currentLang = currentLang === 'ko' ? 'en' : 'ko';
+            document.documentElement.setAttribute('lang', currentLang);
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                const k = el.getAttribute('data-lang');
+                if (dict[k]) el.innerHTML = dict[k];
+            });
+            document.getElementById('langBtn').textContent = dict.btn_label;
+        }
+    </script>
 </body>
-
 </html>
